@@ -413,7 +413,7 @@ exports.connectSocket = function (server) {
 									lean: true
 								}
 
-								console.log(criteria, '=========================================CCCCCCCCCCCC')
+								
 								Services.updateChat(criteria, {
 									$addToSet: dataToUpdate
 								}, options, function (err, dbResult) {
