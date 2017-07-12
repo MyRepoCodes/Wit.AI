@@ -1,0 +1,498 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+    font: 13px Helvetica, Arial;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #fbfbe8;
+    }
+    .welcome-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.welcome {
+    margin: auto;
+    max-width: 400px;
+    width: 100%;
+    padding: 15px;
+    border: thin solid #7ec16e;    
+    position: relative;
+    background:#fafafa;
+
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+.welcome ul li {
+    padding: 0 0 11px 0;
+    list-style: none;
+}
+.welcome ul li label {
+    font-size: 15px;
+}
+ .welcome li input {
+    border: 1px solid #dfdfdf;
+    width: 100%;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.welcome li input[type="submit"] {
+background: #fcfcfc;
+    background: -moz-linear-gradient(top, #fcfcfc 0%, #f7f7f7 7%, #dbdbdb 96%, #dbdbdb 96%, #ffffff 98%, #dbdbdb 100%);
+    background: -webkit-linear-gradient(top, #fcfcfc 0%,#f7f7f7 7%,#dbdbdb 96%,#dbdbdb 96%,#ffffff 98%,#dbdbdb 100%);
+    background: linear-gradient(to bottom, #fcfcfc 0%,#f7f7f7 7%,#d8d8d8 96%,#dbdbdb 96%,#ffffff 98%,#dbdbdb 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#dbdbdb',GradientType=0 );
+    border-color: #ccc;
+    font-weight:600;
+}
+
+form {
+  background: #000;
+  padding: 3px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+
+
+form input {
+  border: 0;
+  padding: 10px;
+  width: 90%;
+  margin-right: .5%;
+}
+
+    form button {
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+
+    .messages-blc {
+    margin-bottom: 85px;
+    margin: 15px;
+  }
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    div.quickReplies {
+      height: 40px;
+      padding-top: 5px;
+      display: none;
+      border-left: 1px solid #000;
+      border-right: 1px solid #000;
+      border-top: 1px solid #000;
+      width: 100%;
+      bottom: 45px;
+    }
+
+    div.quickReplies div.button {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -o-border-radius: 10px;
+
+      background: blue;
+      padding: 7px 9px;
+      cursor: pointer;
+      float: left;
+      margin-left: 15px;
+      background: linear-gradient(to right, skyblue, cyan);
+    }
+
+    div.to {
+      max-width: 50%;
+      clear: both;
+      float: left;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      border-top-right-radius: 10px;
+      /*border:1px solid blue;*/
+      background: blue;
+      background: linear-gradient(to left, cyan, skyblue);
+      padding: 10px;
+      margin-left: 10px;
+      margin-top: 10px;
+    }
+
+    div.from {
+      max-width: 50%;
+      clear: both;
+      float: right;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      border-top-left-radius: 10px;
+      /*border:1px solid blue;*/
+      background: blue;
+      background: linear-gradient(to right, cyan, skyblue);
+      padding: 10px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    .chatEnded {
+      text-align: center;
+      height: 20px;
+      width: 100%;
+      display: none;
+    }
+    .send{
+      display:none;
+    }
+
+    /*chat block*/
+.chat-blc {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    top: auto;
+    background: #fff;
+    border: 1px solid #aaa;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 9px #aaa;
+    visibility: hidden;
+}
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    overflow: auto;
+    background: #fdfdf0;
+}
+#messages li {
+    padding: 5px 10px;
+}
+div.to {
+    max-width: 50%;
+    clear: both;
+    float: left;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    /* border: 1px solid blue; */
+    background: blue;
+    background: #dadac0;
+    padding: 10px 10px 10px 25px;
+    margin-left: 10px;
+    margin-top: 10px;
+    position: relative;
+}
+div.from {
+    max-width: 50%;
+    clear: both;
+    float: right;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 10px;
+    /* border: 1px solid blue; */
+    background: blue;
+    background: #e4e4ce;
+    padding: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+.user-pic {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: -9px;
+    top: -8px;
+}
+.user-pic img {
+    width: 100%;
+    border-radius: 50%;
+}
+div.quickReplies {
+    height: 40px;
+    padding-top: 5px;
+    display: none;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    border-top: 1px solid #000;
+    width: 100%;
+    /* position: fixed; */
+    bottom: 45px;
+    border: 1px solid #dadac0;
+}
+div.quickReplies div.button {
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 10px;
+    background: blue;
+    padding: 7px 12px;
+    cursor: pointer;
+    float: left;
+    margin-left: 10px;
+    background: #7ec16e;
+}
+form.send.chat-send {
+    display: flex;
+    position: static;
+    /* background: none; */
+    border: 1px solid #000;
+    padding: 0px;
+    /* background: #aaa; */
+}
+.chat-send {
+    display: flex;
+}
+.chat-send input {
+    flex: 1;
+    /* border: 1px solid #000; */
+    background: #fffff4;
+    border-right: 1px solid #000;
+    margin: 0;
+}
+form button {
+    /* width: 9%; */
+    background: #7ec16e;
+    border: none;
+    padding: 10px;
+}
+.chat-foot {
+    /* flex: 1; */
+    background: #fbfbe8;
+}
+.chat-send input {
+    flex: 1;
+    /* border: 1px solid #000; */
+    background: #fffff4;
+    border-right: 1px solid #000;
+    margin: 0;
+}
+#messages li:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+  </style>
+</head>
+
+<body>
+
+  <div class="welcome-wrap">
+    <form name='chatPrompt' class="welcome">
+      <ul>
+        <li><label for="email" >Email</label></li>
+        <li><input type="text" autocomplete="off" name="email" size="12" /></li>
+        <li><label for="name">Name</label></li>
+        <li><input type="text" autocomplete="off" name="name" size="12" /></li>
+        <li><input type="submit" name="submit" value="Submit" /></li>
+      </ul>
+    </form>
+  </div>
+
+  <div class="chat-blc">
+    <ul id="messages" class="chat-msg">
+    </ul>
+    <div id="user" style="display:none; float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
+      <b>Users</b>
+      <div id="rooms"></div>
+    </div>
+    <div class="chatEnded"></div>
+    <div class="chat-foot">
+      <div class="quickReplies">
+      </div>
+      <form action="" class="send chat-send">
+        <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
+  </div>
+
+  
+
+  
+  
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    var socket = io();
+    function getParameterByName() {
+      var url = window.location.href;
+      var urlParts=url.split('/');
+      return urlParts;
+    }
+    $(function () {      
+      var botStatus = 0;
+      //var socket = io();
+      var myName = '';
+
+      if(getParameterByName().length==6 || getParameterByName().length==7){
+        $('.welcome').hide();
+        var userObject = {          
+          name: getParameterByName()[4],
+          room: getParameterByName()[5]
+        }
+       // var email = document.chatPrompt.email.value;
+      //  var name = document.chatPrompt.name.value;
+        
+        myName = userObject.name;
+        $.ajax({
+          url: "/hrTeam/"+userObject.room,
+          method:'get',
+          contentType: "application/json"
+        }).done(function(response) {
+          $("#m").prop('disabled', false);  
+          for(var i=0; i<response[0].conversition.length; i++){
+            if(response[0].conversition[i].sender_type=='USER'){
+              $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + response[0].conversition[i].text)));
+            }else{
+              $('#messages').append($('<li>').append($('<div class="from">').text(response[0].conversition[i].text)));
+            }
+          }
+          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());  
+                
+        });
+
+        socket.emit('adduser', userObject,'INITIAL');
+        $('.send').show();
+        $('.chat-blc').css('visibility','visible');
+         
+      }
+      
+  
+      socket.on('connect', function () {
+
+        console.log(socket.io.engine.id,'Socket ID');
+        //$('.send').hide();
+        //console.log('Client: Connected to port ');
+
+        // //call the server-side function 'adduser' and send one parameter (value of prompt)
+        // var val = prompt("Please enter these fields");
+        // console.log(val, ";;;;;;;;;;;;;;;;;");
+        // if (val.indexOf(':') == -1) {
+        //   socket.emit('adduser', val);
+        //   myName = val;
+        //   $('.welcome-wrap').hide();
+        //   $('#messages').append($('<li>').append($('<div class="email">').text('Hello ' + myName)));
+        // } else {
+        //   //$("#user").show();
+        //   console.lo("::::::::: ELse condirtion::::::::::::");
+        //   socket.emit('adduser', val, true);
+        //   myName = val.split(':')[0];
+        //   //socket.emit('show rooms');           
+        //}
+      });
+
+
+
+      $('.send').submit(function () {
+        if($('#m').val()){
+          socket.emit('bot message', $('#m').val(), true);
+          $('#messages').append($('<li>').append($('<div class="from">').text($('#m').val())));
+          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());  
+          $('#m').val('');
+          $('.quickReplies').hide();
+          $("#m").prop('disabled', true);
+        }        
+        return false;
+      });
+
+      socket.on('bot message', function (msg, username) {        
+        if (typeof msg == 'object') {
+          if (msg.text) {
+            $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + msg.text)));
+            if (msg.quickreplies) {
+              $('.quickReplies').html('');
+              $('.quickReplies').show();
+              for (var i = 0; i < msg.quickreplies.length; i++) {
+                $('.quickReplies').append('<div class="button" onclick="postReply(\'' + msg.quickreplies[i] +
+                  '\')">' + msg.quickreplies[i] + '</div>')
+              }
+            }
+          } else {
+            $('.chatEnded').show();
+          }
+          $("#m").prop('disabled', false);
+        } else {
+          if (username != myName)
+            $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + msg)));
+          $("#m").prop('disabled', false); 
+        }
+        $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());
+
+      });
+      socket.on('updaterooms', function (rooms) {
+        $('#rooms').empty();
+        $.each(rooms, function (key, value) {
+          $('#rooms').append('<div><a href="#" onclick="switchRoom(\'' + value + '\')">' + value +
+            '</a></div>');
+        });
+      });
+
+      $('.welcome').submit(function () {
+        if(document.chatPrompt.email.value && document.chatPrompt.name.value){
+          var userObject = {
+            email:document.chatPrompt.email.value,
+            name: document.chatPrompt.name.value
+          }
+        // var email = document.chatPrompt.email.value;
+        //  var name = document.chatPrompt.name.value;
+          socket.emit('adduser', userObject,'INITIAL');
+          myName = userObject.name;
+          $('.welcome-wrap').hide();
+          $('.send').show();
+          $('.chat-blc').css('visibility','visible');
+          $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> Hello ' + myName)));
+          $.ajax({
+            url: "/user/"+document.chatPrompt.email.value,
+            method:'get',
+            contentType: "application/json"
+          }).done(function(response) {
+            if(response[0].status === 'COMPLETED'){
+              $('.send').hide();
+            } 
+            for(var i=0; i<response[0].conversition.length; i++){
+              if(response[0].conversition[i].text){
+                if(response[0].conversition[i].sender_type!='USER'){
+                  $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + response[0].conversition[i].text)));
+                }else{
+                  $('#messages').append($('<li>').append($('<div class="from">').text(response[0].conversition[i].text)));
+                }
+              }              
+            }
+            $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());          
+          });
+        }
+        return false;        
+      })
+    });
+
+
+
+    function postReply(val) {
+      $('#m').val(val);
+      $('.send').submit();
+    }
+  </script>
+</body>
+
+</html>
