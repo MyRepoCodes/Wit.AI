@@ -20,7 +20,7 @@ exports.connectSocket = function (server) {
 	let rooms = [];
 
 	const accessToken = (() => {
-		return "DBCFMX6VV3BIKS5SXCHWTAIMP23NR7PS";
+		return "*********************************************";
 	})();
 
 	let usernames = {};
