@@ -264,21 +264,15 @@ exports.connectSocket = function (server) {
 
 							if (dbResult[0].status !== 'BOTCOMPLETED') {
 								var flag = 0;
-								//console.log("rooms",rooms);
-								for (var i = 0; i < rooms.length; i++) {
-									console.log(rooms[i].toString() + "==" + socket.room.toString())
-									if (rooms[i].toString() == socket.room.toString()) {
+								if (rooms[i].toString() == socket.room.toString()) {
 										flag = 1;
 									}
 								}
-								console.log("flag", flag);
 								if (flag == 0) {
 									//io.in(socket.username).emit('chat message', msg);
 									client.runActions(socket.sessionId, msg, context).then(function (ctx) {
 										context = ctx;
-										console.log("chatbotResponse", chatbotResponse);
 										io.in(socket.room).emit('bot message', chatbotResponse, 'botasdasdasdasdasdasdasd');
-
 										let criteria = {
 												userId: socket.room
 											},
@@ -322,9 +316,7 @@ exports.connectSocket = function (server) {
 									}, options, function (err, dbResult) {
 										if (err) {
 											throw new Error(err)
-										} else {
-											console.log(dbResult);
-										}
+										} 
 									})
 								} else {
 									let ObjToSave = {
@@ -340,32 +332,23 @@ exports.connectSocket = function (server) {
 									}, options, function (err, dbResult) {
 										if (err) {
 											throw new Error(err)
-										} else {
-											console.log(dbResult);
-										}
+										} 
 									})
 								}
 								io.in(socket.room).emit('bot message', msg, socket.name);
 							}
-
 						}
-
 					} else {
-
 						var flag = 0;
-						//console.log("rooms",rooms);
 						for (var i = 0; i < rooms.length; i++) {
-							console.log(rooms[i].toString() + "==" + socket.room.toString())
 							if (rooms[i].toString() == socket.room.toString()) {
 								flag = 1;
 							}
 						}
-						console.log("flag", flag);
 						if (flag == 0) {
 							//io.in(socket.username).emit('chat message', msg);
 							client.runActions(socket.sessionId, msg, context).then(function (ctx) {
 								context = ctx;
-								console.log("chatbotResponse", chatbotResponse);
 								io.in(socket.room).emit('bot message', chatbotResponse, 'botasdasdasdasdasdasdasd');
 
 								let criteria = {
@@ -387,15 +370,12 @@ exports.connectSocket = function (server) {
 									$addToSet: dataToUpdate
 								}, options, function (err, dbResult) {
 
-									console.log(" =====||||||||===", dbResult);
-
 								})
 
 								//res.send({"chatbotResponse":chatbotResponse,"chatbotHistory":chatbotHistory});
 								chatbotResponse = {};
 							}).catch(function (err) {
-								console.log(err, ':_____:')
-								return console.error(err);
+								return err;
 							});
 						}
 
@@ -408,13 +388,11 @@ exports.connectSocket = function (server) {
 
 		});
 		socket.on('chat message', function (msg) {
-			console.log("socket.username", socket.username)
 			io.in(socket.username).emit('chat message', msg);
 		});
 
 		socket.on('reconnect_attempt', (attemptNumber) => {
-			// ...
-			console.log(attemptNumber, ')))))))))((((((((((');
+
 		});
 	});
 
