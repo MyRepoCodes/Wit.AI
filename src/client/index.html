@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
   <title>Socket.IO chat</title>
   <style>
@@ -26,7 +25,7 @@
     max-width: 400px;
     width: 100%;
     padding: 15px;
-    border: thin solid #7ec16e;    
+    border: thin solid #7ec16e;
     position: relative;
     background:#fafafa;
 
@@ -68,15 +67,12 @@ form {
   width: 100%;
 }
 
-
-
 form input {
   border: 0;
   padding: 10px;
   width: 90%;
   margin-right: .5%;
 }
-
     form button {
       background: rgb(130, 224, 255);
       border: none;
@@ -327,10 +323,10 @@ form button {
     </div>
   </div>
 
-  
 
-  
-  
+
+
+
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
@@ -340,27 +336,27 @@ form button {
       var urlParts=url.split('/');
       return urlParts;
     }
-    $(function () {      
+    $(function () {
       var botStatus = 0;
       //var socket = io();
       var myName = '';
 
       if(getParameterByName().length==6 || getParameterByName().length==7){
         $('.welcome').hide();
-        var userObject = {          
+        var userObject = {
           name: getParameterByName()[4],
           room: getParameterByName()[5]
         }
        // var email = document.chatPrompt.email.value;
       //  var name = document.chatPrompt.name.value;
-        
+
         myName = userObject.name;
         $.ajax({
           url: "/hrTeam/"+userObject.room,
           method:'get',
           contentType: "application/json"
         }).done(function(response) {
-          $("#m").prop('disabled', false);  
+          $("#m").prop('disabled', false);
           for(var i=0; i<response[0].conversition.length; i++){
             if(response[0].conversition[i].sender_type=='USER'){
               $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + response[0].conversition[i].text)));
@@ -368,38 +364,19 @@ form button {
               $('#messages').append($('<li>').append($('<div class="from">').text(response[0].conversition[i].text)));
             }
           }
-          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());  
-                
+          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());
+
         });
 
         socket.emit('adduser', userObject,'INITIAL');
         $('.send').show();
         $('.chat-blc').css('visibility','visible');
-         
+
       }
-      
-  
+
+
       socket.on('connect', function () {
 
-        console.log(socket.io.engine.id,'Socket ID');
-        //$('.send').hide();
-        //console.log('Client: Connected to port ');
-
-        // //call the server-side function 'adduser' and send one parameter (value of prompt)
-        // var val = prompt("Please enter these fields");
-        // console.log(val, ";;;;;;;;;;;;;;;;;");
-        // if (val.indexOf(':') == -1) {
-        //   socket.emit('adduser', val);
-        //   myName = val;
-        //   $('.welcome-wrap').hide();
-        //   $('#messages').append($('<li>').append($('<div class="email">').text('Hello ' + myName)));
-        // } else {
-        //   //$("#user").show();
-        //   console.lo("::::::::: ELse condirtion::::::::::::");
-        //   socket.emit('adduser', val, true);
-        //   myName = val.split(':')[0];
-        //   //socket.emit('show rooms');           
-        //}
       });
 
 
@@ -408,15 +385,15 @@ form button {
         if($('#m').val()){
           socket.emit('bot message', $('#m').val(), true);
           $('#messages').append($('<li>').append($('<div class="from">').text($('#m').val())));
-          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());  
+          $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());
           $('#m').val('');
           $('.quickReplies').hide();
           $("#m").prop('disabled', true);
-        }        
+        }
         return false;
       });
 
-      socket.on('bot message', function (msg, username) {        
+      socket.on('bot message', function (msg, username) {
         if (typeof msg == 'object') {
           if (msg.text) {
             $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + msg.text)));
@@ -435,7 +412,7 @@ form button {
         } else {
           if (username != myName)
             $('#messages').append($('<li>').append($('<div class="to">').html('<div class="user-pic"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeK87kPcVmSZ5LqA1ypS-ScAMLZ1-Q4GJGqqk1VwUjrWC4aYar"></div> ' + msg)));
-          $("#m").prop('disabled', false); 
+          $("#m").prop('disabled', false);
         }
         $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());
 
@@ -469,7 +446,7 @@ form button {
           }).done(function(response) {
             if(response[0].status === 'COMPLETED'){
               $('.send').hide();
-            } 
+            }
             for(var i=0; i<response[0].conversition.length; i++){
               if(response[0].conversition[i].text){
                 if(response[0].conversition[i].sender_type!='USER'){
@@ -477,12 +454,12 @@ form button {
                 }else{
                   $('#messages').append($('<li>').append($('<div class="from">').text(response[0].conversition[i].text)));
                 }
-              }              
+              }
             }
-            $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());          
+            $('#messages').scrollTop($('#messages').scrollTop() + $('#messages').height());
           });
         }
-        return false;        
+        return false;
       })
     });
 
