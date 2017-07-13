@@ -28,8 +28,6 @@ exports.connectSocket = function (server) {
 	let roomsObjArr = [];
 
 	io.on('connection', function (socket) {
-
-		console.log("::::::::")
 		const actions = {
 			send(request, response) {
 				const {
@@ -41,7 +39,6 @@ exports.connectSocket = function (server) {
 					text,
 					quickreplies
 				} = response;
-				//console.log(socket.room,'=======888888888888888=======');
 				let criteria = {
 						userId: socket.room
 					},
@@ -49,11 +46,6 @@ exports.connectSocket = function (server) {
 					options = {
 						lean: true
 					}
-
-
-
-				//console.log('user said...', request.text);
-				console.log('sending...', request.text);
 				let ObjToSave = {
 					conversition: {
 						text: request.text,
@@ -61,9 +53,7 @@ exports.connectSocket = function (server) {
 					}
 
 				}
-				console.log("ObjToSave", ObjToSave)
-				Services.findSession(criteria, projection, options, function (err, dbResult) {
-					console.log(err, dbResult, '================');
+				Services.findSession(criteria, projection, options, function (err, dbResult) 
 					if (err) {
 						throw new Error(err)
 					} else {
@@ -74,9 +64,7 @@ exports.connectSocket = function (server) {
 							}, options, function (err, dbResult) {
 								if (err) {
 									throw new Error(err)
-								} else {
-									console.log(dbResult);
-								}
+								} 
 							})
 
 						} else {
@@ -102,7 +90,6 @@ exports.connectSocket = function (server) {
 				context,
 				entities
 			}) {
-				//console.log(entities.technology);
 				return new Promise(function (resolve, reject) {
 					const technology = lib.firstEntityValue(entities, 'technology');
 					if (technology) {
@@ -132,10 +119,9 @@ exports.connectSocket = function (server) {
 					} else {
 						rooms.push(socket.username);
 						socket.rooms = rooms;
-						console.log("socket.rooms", socket.rooms);
 						io.emit('updaterooms', rooms);
 						emailNotification.sendEmail(socket.name,dbResult.userId, function (err, reuslt) {
-							console.log(err, '|||||||||||||||', result);
+							
 
 						})
 						return false;
@@ -147,8 +133,6 @@ exports.connectSocket = function (server) {
 			endofchat({
 				context
 			}) {
-				console.log("-------------- ENd of Chat -----------------", socket.room);
-
 				Services.updateChat({
 					userId: socket.room
 				}, {
@@ -188,7 +172,6 @@ exports.connectSocket = function (server) {
 				}, {}, {
 					lean: true
 				}, function (err, dbResult) {
-					console.log(dbResult, '--------------')
 					if (err) {
 						throw new Error(err)
 					} else {
@@ -196,14 +179,11 @@ exports.connectSocket = function (server) {
 							userData = dbResult;
 							_r(userData, status, userObj)
 						} else {
-							console.log(userObj, '__8');
 							Services.createUser(userObj, function (err, dbResult) {
-								console.log(dbResult, '--------------______', userObj);
 								if (err) {
 									throw new Error(err)
 								} else {
 									userData = dbResult;
-									//console.log(userData, '=====================');
 									_r(userData, status, userObj)
 
 								}
@@ -220,7 +200,6 @@ exports.connectSocket = function (server) {
 					socket.username = userObj.name;
 					socket.name = userObj.name
 					socket.room = userObj.room;
-					console.log("userObj.room", userObj.room)
 					socket.join(socket.room);
 				}
 			}
@@ -228,7 +207,6 @@ exports.connectSocket = function (server) {
 		});
 
 		function _r(userData, status, userObj) {
-			console.log(userData);
 			socket.username = userData.name;
 
 			if (status) {
@@ -240,7 +218,6 @@ exports.connectSocket = function (server) {
 			}
 			socket.name = userObj.name
 			socket.sessionId = userData._id;
-			//console.log(socket.room);
 
 			// rooms.push(socket.sessionId);		
 			// store the room name in the socket session for this client
@@ -250,7 +227,6 @@ exports.connectSocket = function (server) {
 			socket.usernames = [];
 			socket.usernames = userObj.name;
 			// send client to room 1
-			console.log("******socket.room*************", socket.room)
 			socket.join(socket.room);
 
 
@@ -263,7 +239,6 @@ exports.connectSocket = function (server) {
 		}
 
 		socket.on('show rooms', function () {
-			console.log("socket.rooms", socket.rooms);
 			io.emit('updaterooms', socket.rooms);
 		})
 
@@ -276,7 +251,6 @@ exports.connectSocket = function (server) {
 			}, {}, {
 				lean: true
 			}, function (err, dbResult) {
-				console.log(dbResult, '======================');
 				if (err) {
 					throw new Error(err)
 				} else {
@@ -317,22 +291,17 @@ exports.connectSocket = function (server) {
 											}
 										options = {
 											lean: true
-										}
-
-										console.log(criteria, '=========================================CCCCCCCCCCCC')
+										}										
 										Services.updateChat(criteria, {
 											$addToSet: dataToUpdate
 										}, options, function (err, dbResult) {
-
-											console.log(" =====||||||||===", dbResult);
 
 										})
 
 										//res.send({"chatbotResponse":chatbotResponse,"chatbotHistory":chatbotHistory});
 										chatbotResponse = {};
 									}).catch(function (err) {
-										console.log(err, ':_____:')
-										return console.error(err);
+										return err;
 									});
 								}
 
